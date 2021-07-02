@@ -22,12 +22,20 @@ struct PageViewController: ControllerRepresentable {
     var navigationOrientation: UIPageViewController.NavigationOrientation
     var bounce: Bool
     private var interPageSpacing: CGFloat = 0
+    
+    // delegate
+    var willTransitionTo: (_ pageViewController: UIPageViewController,
+                           _ pendingViewControllers: [UIViewController]) -> Void
+    var didFinishAnimating: (_ pageViewController: UIPageViewController,
+                             _ didFinishAnimating: Bool,
+                             _ previousViewControllers: [UIViewController],
+                             _ transitionCompleted: Bool) -> Void
     #endif
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(self, willTransitionTo: willTransitionTo, didFinishAnimating: didFinishAnimating)
     }
-        
+    
     #if os(iOS)
     init(controllers: [ViewController],
          currentPage: Binding<Int>,
@@ -35,7 +43,13 @@ struct PageViewController: ControllerRepresentable {
          navigationOrientation: UIPageViewController.NavigationOrientation,
          bounce: Bool,
          interPageSpacing: CGFloat,
-         animated: Bool)
+         animated: Bool,
+         willTransitionTo: @escaping (_ pageViewController: UIPageViewController,
+                                      _ pendingViewControllers: [UIViewController]) -> Void = {_,_ in },
+         didFinishAnimating: @escaping (_ pageViewController: UIPageViewController,
+                                        _ didFinishAnimating: Bool,
+                                        _ previousViewControllers: [UIViewController],
+                                        _ transitionCompleted: Bool) -> Void = {_,_,_,_ in })
     {
         self.controllers = controllers
         self._currentPage = currentPage
@@ -44,6 +58,8 @@ struct PageViewController: ControllerRepresentable {
         self.bounce = bounce
         self.interPageSpacing = interPageSpacing
         self.animated = animated
+        self.willTransitionTo = willTransitionTo
+        self.didFinishAnimating = didFinishAnimating
     }
     
     func makeUIViewController(context: Context) -> UIPageViewController {

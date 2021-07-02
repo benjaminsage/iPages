@@ -14,6 +14,22 @@ import AppKit
 
 public extension iPages {
     
+    func willTransitionTo(_ delegate: @escaping (_ pageViewController: UIPageViewController,
+                                                 _ pendingViewControllers: [UIViewController]) -> Void) -> iPages {
+        var view = self
+        view.willTransitionTo = delegate
+        return view
+    }
+    
+    func didFinishAnimationg(_ delegate: @escaping (_ pageViewController: UIPageViewController,
+                                                    _ didFinishAnimating: Bool,
+                                                    _ previousViewControllers: [UIViewController],
+                                                    _ transitionCompleted: Bool) -> Void ) -> iPages {
+        var view = self
+        view.didFinishAnimating = delegate
+        return view
+    }
+    
     /// Modifies whether or not the page view should include the standard page control **dots**. (••••)
     /// - Parameter hideDots: Whether the page view should hide the page dots at the bottom 👇
     /// - Returns: A page view with the the desired presence or absence of dots
@@ -65,7 +81,7 @@ public extension iPages {
         view.pageControlPageIndicatorTintColor = otherPages
         return view
     }
-
+    
     /// Modifies the **background style** ⚪️🔘  of the page dots.
     /// - Parameter style: The style of the background of the page dots
     /// - Returns: A page view with the desired background style of the dots
@@ -75,7 +91,7 @@ public extension iPages {
         view.pageControlBackgroundStyle = style
         return view
     }
-        
+    
     /// Modifies the continuous interaction settings of the dots. 🔄
     /// - Parameter allowContinuousInteraction: Whether the dots allow continuous interaction
     /// - Returns: A page view with the desired continuous interaction settings of the page dots
@@ -86,7 +102,7 @@ public extension iPages {
         return view
     }
     #endif
-        
+    
     /// Modifies the **alignment of the page dots**. 👆 👇
     ///
     /// *Trailing* and *leading* alignments will cause the page dots to rotate vertical
@@ -97,7 +113,7 @@ public extension iPages {
         view.pageControlAlignment = alignment
         return view
     }
-        
+    
     #if os(iOS)
     /// Modifies the navigation **orientation** of the page view. ↔️ ↕️
     ///

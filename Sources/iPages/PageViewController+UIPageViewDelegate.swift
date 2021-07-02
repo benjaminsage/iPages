@@ -12,9 +12,23 @@ import UIKit
 extension PageViewController {
     class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
         var parent: PageViewController
+        var willTransitionTo: (_ pageViewController: UIPageViewController,
+                               _ pendingViewControllers: [UIViewController]) -> Void
+        var didFinishAnimating: (_ pageViewController: UIPageViewController,
+                                 _ didFinishAnimating: Bool,
+                                 _ previousViewControllers: [UIViewController],
+                                 _ transitionCompleted: Bool) -> Void
         
-        init(_ pageViewController: PageViewController) {
+        init(_ pageViewController: PageViewController,
+             willTransitionTo: @escaping (_ pageViewController: UIPageViewController,
+                                          _ pendingViewControllers: [UIViewController]) -> Void,
+             didFinishAnimating: @escaping (_ pageViewController: UIPageViewController,
+                                            _ didFinishAnimating: Bool,
+                                            _ previousViewControllers: [UIViewController],
+                                            _ transitionCompleted: Bool) -> Void) {
             self.parent = pageViewController
+            self.willTransitionTo = willTransitionTo
+            self.didFinishAnimating = didFinishAnimating
         }
         
         func pageViewController(
@@ -63,6 +77,14 @@ extension PageViewController {
             {
                 parent.currentPage = index
             }
+            self.didFinishAnimating(pageViewController, finished, previousViewControllers, completed)
+        }
+        
+        func pageViewController(
+            _ pageViewController: UIPageViewController,
+            willTransitionTo pendingViewControllers: [UIViewController])
+        {
+            self.willTransitionTo(pageViewController, pendingViewControllers)
         }
     }
 }

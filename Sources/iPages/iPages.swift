@@ -17,7 +17,15 @@ public struct iPages<Content: View>: View {
         hasExternalSelection ? $externalSelection : $internalSelection
     }
     private var hasExternalSelection = false
-        
+    
+    // delegate
+    var willTransitionTo: ((_ pageViewController: UIPageViewController,
+                            _ pendingViewControllers: [UIViewController]) -> Void) = {_,_ in}
+    var didFinishAnimating: ((_ pageViewController: UIPageViewController,
+                              _ didFinishAnimating: Bool,
+                              _ previousViewControllers: [UIViewController],
+                              _ transitionCompleted: Bool) -> Void) = {_,_,_,_ in }
+    
     // Page view controller
     var pageViewControllerWraps: Bool = false
     var pageViewAnimated: Bool = true
@@ -34,7 +42,9 @@ public struct iPages<Content: View>: View {
                      navigationOrientation: pageViewControllerNavigationOrientation,
                      bounce: pageViewControllerBounce,
                      interPageSpacing: pageViewControllerInterPageSpacing,
-                     animated: pageViewAnimated)
+                     animated: pageViewAnimated,
+                     willTransitionTo: willTransitionTo,
+                     didFinishAnimating: didFinishAnimating)
         #else
         return .init(controllers: viewControllers,
                      currentPage: selection)
@@ -110,9 +120,9 @@ public struct iPages<Content: View>: View {
             _externalSelection = Binding<Int>(get: { 0 }, set: { _ in })
         }
     }
-        
+    
     @Environment(\.layoutDirection) private var layoutDirection: LayoutDirection
-        
+    
     public var body: some View {
         ZStack(alignment: pageControlAlignment) {
             pageViewController
